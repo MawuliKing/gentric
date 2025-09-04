@@ -1,0 +1,12 @@
+export enum ACCOUNT_STATUS {
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  DEACTIVATED = 'DEACTIVATED',
+}
+
+
+export enum ACCOUNT_TYPE {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  CUSTOMER = 'CUSTOMER',
+}
