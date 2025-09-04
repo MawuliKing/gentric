@@ -14,8 +14,8 @@ export class StructuredResponse {
   payload: any;
 
   @ApiProperty()
-  total: number;
+  total?: number;
 
   @ApiProperty()
-  totalPages: number;
+  totalPages?: number;
 }

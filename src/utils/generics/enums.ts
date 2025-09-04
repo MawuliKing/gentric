@@ -4,9 +4,26 @@ export enum ACCOUNT_STATUS {
   DEACTIVATED = 'DEACTIVATED',
 }
 
-
 export enum ACCOUNT_TYPE {
   ADMIN = 'ADMIN',
   USER = 'USER',
   CUSTOMER = 'CUSTOMER',
+}
+
+export enum FIELD_TYPE {
+  TEXT = 'text',
+  NUMBER = 'number',
+  TEXTAREA = 'textarea',
+  BOOLEAN = 'boolean',
+  CHECKBOX = 'checkbox',
+  DROPDOWN = 'dropdown',
+  IMAGE = 'image',
+  DATE = 'date',
+}
+
+export enum SUBMISSION_STATUS {
+  DRAFT = 'draft',
+  SUBMITTED = 'submitted',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
 }

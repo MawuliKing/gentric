@@ -13,7 +13,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: process.env.CORS_ORIGIN,
+    origin: ['http://localhost:5173', process.env.CORS_ORIGIN].filter(Boolean),
     credentials: true,
   });
 
@@ -31,11 +31,6 @@ async function bootstrap() {
     .build();
 
   const port = process.env.PORT || 3000;
-
-  app.enableCors({
-    origin: '*',
-    // credentials: true,
-  });
 
 
   const document = SwaggerModule.createDocument(app, config);

@@ -5,6 +5,8 @@ import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { IdentityEntity } from './entities/identity.entity';
 import { NotificationEntity } from './entities/notification.entity';
+import { ProjectTypesEntity } from './entities/project-types.entity';
+import { ReportTemplatesEntity } from './entities/report-templates.entity';
 
 @Global()
 @Module({
@@ -38,6 +40,9 @@ import { NotificationEntity } from './entities/notification.entity';
       //Authentication
       IdentityEntity,
       NotificationEntity,
+      //Form Builder
+      ProjectTypesEntity,
+      ReportTemplatesEntity,
     ]),
   ],
   exports: [TypeOrmModule],

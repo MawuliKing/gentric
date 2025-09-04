@@ -6,6 +6,9 @@ import { jwtConstants } from './utils/constants/constants';
 import { EmailModule } from './api/email/email.module';
 import { NotificationModule } from './api/notification/notification.module';
 import { AuthModule } from './api/auth/auth.module';
+import { ProjectTypeModule } from './api/project-type/project-type.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './utils/guards/auth.giuard';
 
 @Module({
   imports: [
@@ -22,8 +25,13 @@ import { AuthModule } from './api/auth/auth.module';
     EmailModule,
     NotificationModule,
     AuthModule,
+    ProjectTypeModule,
   ],
-  controllers: [],
-  providers: [],
+  providers: [
+    {
+      useClass: AuthGuard,
+      provide: APP_GUARD,
+    },
+  ],
 })
 export class AppModule { }
