@@ -24,6 +24,7 @@ import {
     AuthResponseDto,
     MessageResponseDto
 } from './auth.dto';
+import { StructuredResponse } from '../../utils/dto/structured-response.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -37,12 +38,12 @@ export class AuthController {
     @ApiResponse({
         status: 201,
         description: 'User registered successfully',
-        type: AuthResponseDto
+        type: StructuredResponse
     })
     @ApiResponse({ status: 409, description: 'User with this email already exists' })
     @ApiResponse({ status: 400, description: 'Validation error' })
-    async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
-        return this.authService.register(registerDto);
+    async register(@Body() registerDto: RegisterDto): Promise<StructuredResponse> {
+        return await this.authService.register(registerDto);
     }
 
     @Public()
@@ -52,12 +53,12 @@ export class AuthController {
     @ApiResponse({
         status: 200,
         description: 'Login successful',
-        type: AuthResponseDto
+        type: StructuredResponse
     })
     @ApiResponse({ status: 401, description: 'Invalid email or password' })
     @ApiResponse({ status: 400, description: 'Validation error' })
-    async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
-        return this.authService.login(loginDto);
+    async login(@Body() loginDto: LoginDto): Promise<StructuredResponse> {
+        return await this.authService.login(loginDto);
     }
 
     @Public()
@@ -67,11 +68,11 @@ export class AuthController {
     @ApiResponse({
         status: 200,
         description: 'Password reset email sent if email exists',
-        type: MessageResponseDto
+        type: StructuredResponse
     })
     @ApiResponse({ status: 400, description: 'Validation error' })
-    async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<MessageResponseDto> {
-        return this.authService.forgotPassword(forgotPasswordDto);
+    async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<StructuredResponse> {
+        return await this.authService.forgotPassword(forgotPasswordDto);
     }
 
     @Public()
@@ -81,11 +82,11 @@ export class AuthController {
     @ApiResponse({
         status: 200,
         description: 'Password reset successfully',
-        type: MessageResponseDto
+        type: StructuredResponse
     })
     @ApiResponse({ status: 400, description: 'Invalid or expired reset token' })
-    async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<MessageResponseDto> {
-        return this.authService.resetPassword(resetPasswordDto);
+    async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<StructuredResponse> {
+        return await this.authService.resetPassword(resetPasswordDto);
     }
 
     @UseGuards(AuthGuard)
@@ -96,15 +97,15 @@ export class AuthController {
     @ApiResponse({
         status: 200,
         description: 'Password changed successfully',
-        type: MessageResponseDto
+        type: StructuredResponse
     })
     @ApiResponse({ status: 401, description: 'Unauthorized or incorrect current password' })
     @ApiResponse({ status: 400, description: 'Validation error' })
     async changePassword(
         @Request() req: any,
         @Body() changePasswordDto: ChangePasswordDto
-    ): Promise<MessageResponseDto> {
-        return this.authService.changePassword(req.user.sub, changePasswordDto);
+    ): Promise<StructuredResponse> {
+        return await this.authService.changePassword(req.user.sub, changePasswordDto);
     }
 
     @UseGuards(AuthGuard)
@@ -114,12 +115,12 @@ export class AuthController {
     @ApiResponse({
         status: 200,
         description: 'Profile retrieved successfully',
-        type: AuthResponseDto
+        type: StructuredResponse
     })
     @ApiResponse({ status: 401, description: 'Unauthorized' })
     @ApiResponse({ status: 404, description: 'User not found' })
-    async getProfile(@Request() req: any): Promise<AuthResponseDto> {
-        return this.authService.getProfile(req.user.sub);
+    async getProfile(@Request() req: any): Promise<StructuredResponse> {
+        return await this.authService.getProfile(req.user.sub);
     }
 
     @UseGuards(AuthGuard)
@@ -130,7 +131,7 @@ export class AuthController {
     @ApiResponse({
         status: 200,
         description: 'Profile updated successfully',
-        type: AuthResponseDto
+        type: StructuredResponse
     })
     @ApiResponse({ status: 401, description: 'Unauthorized' })
     @ApiResponse({ status: 404, description: 'User not found' })
@@ -138,8 +139,8 @@ export class AuthController {
     async updateProfile(
         @Request() req: any,
         @Body() updateProfileDto: UpdateProfileDto
-    ): Promise<AuthResponseDto> {
-        return this.authService.updateProfile(req.user.sub, updateProfileDto);
+    ): Promise<StructuredResponse> {
+        return await this.authService.updateProfile(req.user.sub, updateProfileDto);
     }
 
     @Public()
@@ -149,11 +150,11 @@ export class AuthController {
     @ApiResponse({
         status: 200,
         description: 'Email verified successfully',
-        type: MessageResponseDto
+        type: StructuredResponse
     })
     @ApiResponse({ status: 400, description: 'Invalid verification token' })
-    async verifyEmail(@Query('token') token: string): Promise<MessageResponseDto> {
-        return this.authService.verifyEmail(token);
+    async verifyEmail(@Query('token') token: string): Promise<StructuredResponse> {
+        return await this.authService.verifyEmail(token);
     }
 
     @Public()
@@ -163,11 +164,11 @@ export class AuthController {
     @ApiResponse({
         status: 200,
         description: 'Verification email sent successfully',
-        type: MessageResponseDto
+        type: StructuredResponse
     })
     @ApiResponse({ status: 404, description: 'User not found' })
     @ApiResponse({ status: 400, description: 'Email already verified or failed to send' })
-    async resendVerificationEmail(@Body('email') email: string): Promise<MessageResponseDto> {
-        return this.authService.resendVerificationEmail(email);
+    async resendVerificationEmail(@Body('email') email: string): Promise<StructuredResponse> {
+        return await this.authService.resendVerificationEmail(email);
     }
 }

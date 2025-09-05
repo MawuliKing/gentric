@@ -31,13 +31,7 @@ export class ReportTemplatesController {
     @ApiResponse({ status: 404, description: 'Project type not found' })
     @ApiResponse({ status: 409, description: 'Report template with this name already exists for this project type' })
     async create(@Body() createReportTemplateDto: CreateReportTemplateDto): Promise<StructuredResponse> {
-        const data = await this.reportTemplatesService.create(createReportTemplateDto);
-        return {
-            status: true,
-            statusCode: 201,
-            message: 'Report template created successfully',
-            payload: data
-        };
+        return await this.reportTemplatesService.create(createReportTemplateDto);
     }
 
     @Get()
@@ -62,18 +56,9 @@ export class ReportTemplatesController {
         const page = queryParams?.page || 1;
         const pageSize = queryParams?.pageSize || 10;
 
-        const { data, total, totalPages } = projectTypeId
+        return projectTypeId
             ? await this.reportTemplatesService.findByProjectTypePaginated(projectTypeId, page, pageSize)
             : await this.reportTemplatesService.findAllPaginated(page, pageSize);
-
-        return {
-            status: true,
-            statusCode: 200,
-            message: 'Report templates retrieved successfully',
-            payload: data,
-            total,
-            totalPages
-        };
     }
 
     @Get(':id')
@@ -86,13 +71,7 @@ export class ReportTemplatesController {
     })
     @ApiResponse({ status: 404, description: 'Report template not found' })
     async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<StructuredResponse> {
-        const data = await this.reportTemplatesService.findOne(id);
-        return {
-            status: true,
-            statusCode: 200,
-            message: 'Report template retrieved successfully',
-            payload: data
-        };
+        return await this.reportTemplatesService.findOne(id);
     }
 
     @Patch(':id')
@@ -109,13 +88,7 @@ export class ReportTemplatesController {
         @Param('id', ParseUUIDPipe) id: string,
         @Body() updateReportTemplateDto: UpdateReportTemplateDto
     ): Promise<StructuredResponse> {
-        const data = await this.reportTemplatesService.update(id, updateReportTemplateDto);
-        return {
-            status: true,
-            statusCode: 200,
-            message: 'Report template updated successfully',
-            payload: data
-        };
+        return await this.reportTemplatesService.update(id, updateReportTemplateDto);
     }
 
     @Delete(':id')
@@ -128,12 +101,6 @@ export class ReportTemplatesController {
     })
     @ApiResponse({ status: 404, description: 'Report template not found' })
     async remove(@Param('id', ParseUUIDPipe) id: string): Promise<StructuredResponse> {
-        await this.reportTemplatesService.remove(id);
-        return {
-            status: true,
-            statusCode: 200,
-            message: 'Report template deleted successfully',
-            payload: null
-        };
+        return await this.reportTemplatesService.remove(id);
     }
 }

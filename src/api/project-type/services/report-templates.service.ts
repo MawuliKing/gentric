@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { ReportTemplatesEntity } from '../../../database/entities/report-templates.entity';
 import { ProjectTypesEntity } from '../../../database/entities/project-types.entity';
 import { CreateReportTemplateDto, UpdateReportTemplateDto } from '../dto/report-template.dto';
+import { StructuredResponse } from '../../../utils/dto/structured-response.dto';
 
 @Injectable()
 export class ReportTemplatesService {
@@ -14,7 +15,7 @@ export class ReportTemplatesService {
         private readonly projectTypesRepository: Repository<ProjectTypesEntity>,
     ) { }
 
-    async create(createReportTemplateDto: CreateReportTemplateDto): Promise<ReportTemplatesEntity> {
+    async create(createReportTemplateDto: CreateReportTemplateDto): Promise<StructuredResponse> {
         // Verify project type exists
         const projectType = await this.projectTypesRepository.findOne({
             where: { id: createReportTemplateDto.projectTypeId },
@@ -41,7 +42,14 @@ export class ReportTemplatesService {
             projectType,
         });
 
-        return await this.reportTemplatesRepository.save(reportTemplate);
+        const savedTemplate = await this.reportTemplatesRepository.save(reportTemplate);
+
+        return {
+            status: true,
+            statusCode: 201,
+            message: 'Report template created successfully',
+            payload: savedTemplate
+        };
     }
 
     async findAll(): Promise<ReportTemplatesEntity[]> {
@@ -51,11 +59,7 @@ export class ReportTemplatesService {
         });
     }
 
-    async findAllPaginated(page: number = 1, pageSize: number = 10): Promise<{
-        data: ReportTemplatesEntity[];
-        total: number;
-        totalPages: number;
-    }> {
+    async findAllPaginated(page: number = 1, pageSize: number = 10): Promise<StructuredResponse> {
         const [data, total] = await this.reportTemplatesRepository.findAndCount({
             relations: ['projectType'],
             order: { createdAt: 'DESC' },
@@ -66,9 +70,12 @@ export class ReportTemplatesService {
         const totalPages = Math.ceil(total / pageSize);
 
         return {
-            data,
+            status: true,
+            statusCode: 200,
+            message: 'Report templates retrieved successfully',
+            payload: data,
             total,
-            totalPages,
+            totalPages
         };
     }
 
@@ -80,11 +87,7 @@ export class ReportTemplatesService {
         });
     }
 
-    async findByProjectTypePaginated(projectTypeId: string, page: number = 1, pageSize: number = 10): Promise<{
-        data: ReportTemplatesEntity[];
-        total: number;
-        totalPages: number;
-    }> {
+    async findByProjectTypePaginated(projectTypeId: string, page: number = 1, pageSize: number = 10): Promise<StructuredResponse> {
         const [data, total] = await this.reportTemplatesRepository.findAndCount({
             where: { projectType: { id: projectTypeId } },
             relations: ['projectType'],
@@ -96,13 +99,16 @@ export class ReportTemplatesService {
         const totalPages = Math.ceil(total / pageSize);
 
         return {
-            data,
+            status: true,
+            statusCode: 200,
+            message: 'Report templates retrieved successfully',
+            payload: data,
             total,
-            totalPages,
+            totalPages
         };
     }
 
-    async findOne(id: string): Promise<ReportTemplatesEntity> {
+    async findOne(id: string): Promise<StructuredResponse> {
         const reportTemplate = await this.reportTemplatesRepository.findOne({
             where: { id },
             relations: ['projectType'],
@@ -112,11 +118,23 @@ export class ReportTemplatesService {
             throw new NotFoundException(`Report template with ID ${id} not found`);
         }
 
-        return reportTemplate;
+        return {
+            status: true,
+            statusCode: 200,
+            message: 'Report template retrieved successfully',
+            payload: reportTemplate
+        };
     }
 
-    async update(id: string, updateReportTemplateDto: UpdateReportTemplateDto): Promise<ReportTemplatesEntity> {
-        const reportTemplate = await this.findOne(id);
+    async update(id: string, updateReportTemplateDto: UpdateReportTemplateDto): Promise<StructuredResponse> {
+        const reportTemplate = await this.reportTemplatesRepository.findOne({
+            where: { id },
+            relations: ['projectType'],
+        });
+
+        if (!reportTemplate) {
+            throw new NotFoundException(`Report template with ID ${id} not found`);
+        }
 
         // If project type is being updated, verify it exists
         if (updateReportTemplateDto.projectTypeId) {
@@ -146,12 +164,33 @@ export class ReportTemplatesService {
         }
 
         Object.assign(reportTemplate, updateReportTemplateDto);
-        return await this.reportTemplatesRepository.save(reportTemplate);
+        const updatedTemplate = await this.reportTemplatesRepository.save(reportTemplate);
+
+        return {
+            status: true,
+            statusCode: 200,
+            message: 'Report template updated successfully',
+            payload: updatedTemplate
+        };
     }
 
-    async remove(id: string): Promise<void> {
-        const reportTemplate = await this.findOne(id);
+    async remove(id: string): Promise<StructuredResponse> {
+        const reportTemplate = await this.reportTemplatesRepository.findOne({
+            where: { id },
+        });
+
+        if (!reportTemplate) {
+            throw new NotFoundException(`Report template with ID ${id} not found`);
+        }
+
         await this.reportTemplatesRepository.remove(reportTemplate);
+
+        return {
+            status: true,
+            statusCode: 200,
+            message: 'Report template deleted successfully',
+            payload: null
+        };
     }
 
     async findByName(name: string, projectTypeId?: string): Promise<ReportTemplatesEntity | null> {

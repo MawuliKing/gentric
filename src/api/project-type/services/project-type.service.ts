@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProjectTypesEntity } from '../../../database/entities/project-types.entity';
 import { CreateProjectTypeDto, UpdateProjectTypeDto } from '../dto/project-type.dto';
+import { StructuredResponse } from '../../../utils/dto/structured-response.dto';
 
 @Injectable()
 export class ProjectTypeService {
@@ -11,7 +12,7 @@ export class ProjectTypeService {
         private readonly projectTypesRepository: Repository<ProjectTypesEntity>,
     ) { }
 
-    async create(createProjectTypeDto: CreateProjectTypeDto): Promise<ProjectTypesEntity> {
+    async create(createProjectTypeDto: CreateProjectTypeDto): Promise<StructuredResponse> {
         // Check if project type with same name already exists
         const existingProjectType = await this.projectTypesRepository.findOne({
             where: { name: createProjectTypeDto.name },
@@ -22,7 +23,14 @@ export class ProjectTypeService {
         }
 
         const projectType = this.projectTypesRepository.create(createProjectTypeDto);
-        return await this.projectTypesRepository.save(projectType);
+        const savedProjectType = await this.projectTypesRepository.save(projectType);
+
+        return {
+            status: true,
+            statusCode: 201,
+            message: 'Project type created successfully',
+            payload: savedProjectType
+        };
     }
 
     async findAll(): Promise<ProjectTypesEntity[]> {
@@ -32,11 +40,7 @@ export class ProjectTypeService {
         });
     }
 
-    async findAllPaginated(page: number = 1, pageSize: number = 10): Promise<{
-        data: ProjectTypesEntity[];
-        total: number;
-        totalPages: number;
-    }> {
+    async findAllPaginated(page: number = 1, pageSize: number = 10): Promise<StructuredResponse> {
         const [data, total] = await this.projectTypesRepository.findAndCount({
             relations: ['reports'],
             order: { createdAt: 'DESC' },
@@ -47,13 +51,16 @@ export class ProjectTypeService {
         const totalPages = Math.ceil(total / pageSize);
 
         return {
-            data,
+            status: true,
+            statusCode: 200,
+            message: 'Project types retrieved successfully',
+            payload: data,
             total,
-            totalPages,
+            totalPages
         };
     }
 
-    async findOne(id: string): Promise<ProjectTypesEntity> {
+    async findOne(id: string): Promise<StructuredResponse> {
         const projectType = await this.projectTypesRepository.findOne({
             where: { id },
             relations: ['reports'],
@@ -63,11 +70,23 @@ export class ProjectTypeService {
             throw new NotFoundException(`Project type with ID ${id} not found`);
         }
 
-        return projectType;
+        return {
+            status: true,
+            statusCode: 200,
+            message: 'Project type retrieved successfully',
+            payload: projectType
+        };
     }
 
-    async update(id: string, updateProjectTypeDto: UpdateProjectTypeDto): Promise<ProjectTypesEntity> {
-        const projectType = await this.findOne(id);
+    async update(id: string, updateProjectTypeDto: UpdateProjectTypeDto): Promise<StructuredResponse> {
+        const projectType = await this.projectTypesRepository.findOne({
+            where: { id },
+            relations: ['reports'],
+        });
+
+        if (!projectType) {
+            throw new NotFoundException(`Project type with ID ${id} not found`);
+        }
 
         // Check if name is being updated and if it conflicts with existing names
         if (updateProjectTypeDto.name && updateProjectTypeDto.name !== projectType.name) {
@@ -81,12 +100,33 @@ export class ProjectTypeService {
         }
 
         Object.assign(projectType, updateProjectTypeDto);
-        return await this.projectTypesRepository.save(projectType);
+        const updatedProjectType = await this.projectTypesRepository.save(projectType);
+
+        return {
+            status: true,
+            statusCode: 200,
+            message: 'Project type updated successfully',
+            payload: updatedProjectType
+        };
     }
 
-    async remove(id: string): Promise<void> {
-        const projectType = await this.findOne(id);
+    async remove(id: string): Promise<StructuredResponse> {
+        const projectType = await this.projectTypesRepository.findOne({
+            where: { id },
+        });
+
+        if (!projectType) {
+            throw new NotFoundException(`Project type with ID ${id} not found`);
+        }
+
         await this.projectTypesRepository.remove(projectType);
+
+        return {
+            status: true,
+            statusCode: 200,
+            message: 'Project type deleted successfully',
+            payload: null
+        };
     }
 
     async findByName(name: string): Promise<ProjectTypesEntity | null> {

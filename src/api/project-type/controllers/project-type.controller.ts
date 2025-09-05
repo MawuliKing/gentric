@@ -33,13 +33,7 @@ export class ProjectTypeController {
     })
     @ApiResponse({ status: 409, description: 'Project type with this name already exists' })
     async create(@Body() createProjectTypeDto: CreateProjectTypeDto): Promise<StructuredResponse> {
-        const data = await this.projectTypeService.create(createProjectTypeDto);
-        return {
-            status: true,
-            statusCode: 201,
-            message: 'Project type created successfully',
-            payload: data
-        };
+        return await this.projectTypeService.create(createProjectTypeDto);
     }
 
     @Get()
@@ -52,18 +46,10 @@ export class ProjectTypeController {
         type: StructuredResponse
     })
     async findAll(@Query() queryParams: QueryParams): Promise<StructuredResponse> {
-        const { data, total, totalPages } = await this.projectTypeService.findAllPaginated(
+        return await this.projectTypeService.findAllPaginated(
             queryParams.page,
             queryParams.pageSize
         );
-        return {
-            status: true,
-            statusCode: 200,
-            message: 'Project types retrieved successfully',
-            payload: data,
-            total,
-            totalPages
-        };
     }
 
     @Get(':id')
@@ -76,13 +62,7 @@ export class ProjectTypeController {
     })
     @ApiResponse({ status: 404, description: 'Project type not found' })
     async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<StructuredResponse> {
-        const data = await this.projectTypeService.findOne(id);
-        return {
-            status: true,
-            statusCode: 200,
-            message: 'Project type retrieved successfully',
-            payload: data
-        };
+        return await this.projectTypeService.findOne(id);
     }
 
     @Patch(':id')
@@ -99,13 +79,7 @@ export class ProjectTypeController {
         @Param('id', ParseUUIDPipe) id: string,
         @Body() updateProjectTypeDto: UpdateProjectTypeDto
     ): Promise<StructuredResponse> {
-        const data = await this.projectTypeService.update(id, updateProjectTypeDto);
-        return {
-            status: true,
-            statusCode: 200,
-            message: 'Project type updated successfully',
-            payload: data
-        };
+        return await this.projectTypeService.update(id, updateProjectTypeDto);
     }
 
     @Delete(':id')
@@ -118,12 +92,6 @@ export class ProjectTypeController {
     })
     @ApiResponse({ status: 404, description: 'Project type not found' })
     async remove(@Param('id', ParseUUIDPipe) id: string): Promise<StructuredResponse> {
-        await this.projectTypeService.remove(id);
-        return {
-            status: true,
-            statusCode: 200,
-            message: 'Project type deleted successfully',
-            payload: null
-        };
+        return await this.projectTypeService.remove(id);
     }
 }

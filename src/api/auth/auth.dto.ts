@@ -19,7 +19,7 @@ export class RegisterDto {
     @IsOptional()
     otherName?: string;
 
-    @ApiProperty({ example: 'john.doe@example.com', description: 'User email address' })
+    @ApiProperty({ example: 'demo@gentric.com', description: 'User email address' })
     @IsEmail()
     @IsNotEmpty()
     email: string;
@@ -49,7 +49,7 @@ export class RegisterDto {
 }
 
 export class LoginDto {
-    @ApiProperty({ example: 'john.doe@example.com', description: 'User email address' })
+    @ApiProperty({ example: 'demo@gentric.com', description: 'User email address' })
     @IsEmail()
     @IsNotEmpty()
     email: string;
@@ -61,7 +61,7 @@ export class LoginDto {
 }
 
 export class ForgotPasswordDto {
-    @ApiProperty({ example: 'john.doe@example.com', description: 'User email address' })
+    @ApiProperty({ example: 'demo@gentric.com', description: 'User email address' })
     @IsEmail()
     @IsNotEmpty()
     email: string;
@@ -125,7 +125,7 @@ export class UserDto {
     @ApiProperty({ example: 'uuid-here', description: 'User ID' })
     id: string;
 
-    @ApiProperty({ example: 'john.doe@example.com', description: 'User email' })
+    @ApiProperty({ example: 'demo@gentric.com', description: 'User email' })
     email: string;
 
     @ApiProperty({ example: 'John', description: 'User first name' })
@@ -160,7 +160,7 @@ export class AuthResponseDto extends StructuredResponse {
                 accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
                 user: {
                     id: 'uuid-here',
-                    email: 'john.doe@example.com',
+                    email: 'demo@gentric.com',
                     firstName: 'John',
                     lastName: 'Doe',
                     type: 'CUSTOMER'
