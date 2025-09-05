@@ -6,7 +6,7 @@ export enum ACCOUNT_STATUS {
 
 export enum ACCOUNT_TYPE {
   ADMIN = 'ADMIN',
-  USER = 'USER',
+  AGENT = 'AGENT',
   CUSTOMER = 'CUSTOMER',
 }
 

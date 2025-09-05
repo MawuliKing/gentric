@@ -14,6 +14,9 @@ export class ProjectsEntity extends BaseDbEntity {
     @ManyToOne(() => IdentityEntity, (identity) => identity.id)
     assignedAgent: IdentityEntity;
 
+    @ManyToOne(() => IdentityEntity, (identity) => identity.id)
+    customer: IdentityEntity;
+
     @ManyToOne(() => ProjectTypesEntity, (projectType) => projectType.id)
     projectType: ProjectTypesEntity;
 }

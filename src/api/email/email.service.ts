@@ -53,4 +53,23 @@ export class EmailService {
       },
     });
   }
+
+  async sendPasswordEmail(email: string, firstName: string, password: string, userType: 'agent' | 'customer') {
+    const currentYear = new Date().getFullYear();
+    const loginLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login`;
+
+    await this.mailerService.sendMail({
+      to: email,
+      from: 'No-Reply - Gentric <noreply@gentric.com>',
+      subject: `Welcome to Gentric - Your ${userType === 'agent' ? 'Agent' : 'Customer'} Account`,
+      template: 'password-welcome',
+      context: {
+        firstName,
+        password,
+        userType: userType === 'agent' ? 'Agent' : 'Customer',
+        loginLink,
+        year: currentYear,
+      },
+    });
+  }
 }
