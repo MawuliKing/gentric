@@ -12,6 +12,8 @@ import { AgentModule } from './api/agent/agent.module';
 import { CustomerModule } from './api/customer/customer.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './utils/guards/auth.giuard';
+import { ReportsController } from './api/reports/reports.controller';
+import { ReportsService } from './api/reports/reports.service';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { AuthGuard } from './utils/guards/auth.giuard';
       useClass: AuthGuard,
       provide: APP_GUARD,
     },
+    ReportsService,
   ],
+  controllers: [ReportsController],
 })
 export class AppModule { }

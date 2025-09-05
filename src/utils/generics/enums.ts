@@ -27,3 +27,10 @@ export enum SUBMISSION_STATUS {
   APPROVED = 'approved',
   REJECTED = 'rejected',
 }
+
+export enum REPORT_STATUS {
+  DRAFT = 'DRAFT',
+  SUBMITTED = 'SUBMITTED',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
