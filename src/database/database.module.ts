@@ -23,8 +23,8 @@ import { ReportTemplatesEntity } from './entities/report-templates.entity';
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
         entities: [__dirname + '/../**/*.entity.{ts}'],
-        synchronize: true,
-        logging: true,
+        synchronize: false,
+        logging: false,
         autoLoadEntities: true,
         dropSchema: false,
         // schema: 'dev',
@@ -47,4 +47,4 @@ import { ReportTemplatesEntity } from './entities/report-templates.entity';
   ],
   exports: [TypeOrmModule],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}
