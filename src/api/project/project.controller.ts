@@ -120,6 +120,72 @@ export class ProjectController {
     }
   }
 
+  @Get('agent/:agentId')
+  @ApiOperation({ summary: 'Get all projects assigned to a specific agent' })
+  @ApiParam({ name: 'agentId', description: 'Agent UUID' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number (default: 1)',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: 'Items per page (default: 10)',
+    example: 10,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Projects assigned to agent',
+    type: StructuredResponse,
+  })
+  async findByAgent(
+    @Param('agentId', ParseUUIDPipe) agentId: string,
+    @Query() queryParams?: QueryParams,
+  ): Promise<StructuredResponse> {
+    const page = queryParams?.page || 1;
+    const pageSize = queryParams?.pageSize || 10;
+    return await this.projectService.findByAssignedAgentPaginated(
+      agentId,
+      page,
+      pageSize,
+    );
+  }
+
+  @Get('customer/:customerId')
+  @ApiOperation({ summary: 'Get all projects for a specific customer' })
+  @ApiParam({ name: 'customerId', description: 'Customer UUID' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number (default: 1)',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: 'Items per page (default: 10)',
+    example: 10,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Projects for customer',
+    type: StructuredResponse,
+  })
+  async findByCustomer(
+    @Param('customerId', ParseUUIDPipe) customerId: string,
+    @Query() queryParams?: QueryParams,
+  ): Promise<StructuredResponse> {
+    const page = queryParams?.page || 1;
+    const pageSize = queryParams?.pageSize || 10;
+    return await this.projectService.findByCustomerPaginated(
+      customerId,
+      page,
+      pageSize,
+    );
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a project by ID' })
   @ApiParam({ name: 'id', description: 'Project UUID' })

@@ -231,7 +231,12 @@ export class ProjectService {
   async findOne(id: string): Promise<StructuredResponse> {
     const project = await this.projectsRepository.findOne({
       where: { id },
-      relations: ['assignedAgent', 'customer', 'projectType'],
+      relations: [
+        'assignedAgent',
+        'customer',
+        'projectType',
+        'projectType.reports',
+      ],
     });
 
     if (!project) {
