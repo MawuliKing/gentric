@@ -258,6 +258,65 @@ export class ReportsController {
     return await this.reportsService.reject(id, approveReportDto);
   }
 
+  @Patch(':id/submit')
+  @ApiOperation({ summary: 'Submit a report for approval' })
+  @ApiParam({ name: 'id', description: 'Report submission UUID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Report submitted for approval successfully',
+    type: StructuredResponse,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Report submission not found',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Only draft reports can be submitted for approval',
+  })
+  async submitForApproval(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<StructuredResponse> {
+    return await this.reportsService.submitForApproval(id);
+  }
+
+  @Get('statistics')
+  @ApiOperation({ summary: 'Get report submission statistics' })
+  @ApiResponse({
+    status: 200,
+    description: 'Report statistics retrieved successfully',
+    type: StructuredResponse,
+  })
+  async getStatistics(): Promise<StructuredResponse> {
+    return await this.reportsService.getReportStatistics();
+  }
+
+  @Get('project/:projectId/status/:status')
+  @ApiOperation({
+    summary: 'Get reports by project ID and status',
+  })
+  @ApiParam({ name: 'projectId', description: 'Project UUID' })
+  @ApiParam({
+    name: 'status',
+    description: 'Report status',
+    enum: REPORT_STATUS,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Report submissions retrieved successfully',
+    type: StructuredResponse,
+  })
+  @ApiResponse({ status: 404, description: 'Project not found' })
+  async getReportsByProjectAndStatus(
+    @Param('projectId', ParseUUIDPipe) projectId: string,
+    @Param('status') status: REPORT_STATUS,
+  ): Promise<StructuredResponse> {
+    return await this.reportsService.getReportsByProjectAndStatus(
+      projectId,
+      status,
+    );
+  }
+
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a report submission' })
   @ApiParam({ name: 'id', description: 'Report submission UUID' })

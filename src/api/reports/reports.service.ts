@@ -87,7 +87,7 @@ export class ReportsService {
 
   async findAll(): Promise<StructuredResponse> {
     const submissions = await this.reportSubmissionRepository.find({
-      relations: ['project', 'reportTemplate'],
+      relations: ['project'],
       order: { createdAt: 'DESC' },
     });
 
@@ -284,14 +284,9 @@ export class ReportsService {
 
     submission.status = REPORT_STATUS.APPROVED;
     if (approveReportDto.comments) {
-      // You might want to add a comments field to the entity
-      // For now, we'll store it in reportData
-      submission.reportData = {
-        ...submission.reportData,
-        approvalComments: approveReportDto.comments,
-        approvedAt: new Date().toISOString(),
-      };
+      submission.approvalComments = approveReportDto.comments;
     }
+    submission.approvedAt = new Date();
 
     const approvedSubmission =
       await this.reportSubmissionRepository.save(submission);
@@ -324,14 +319,9 @@ export class ReportsService {
 
     submission.status = REPORT_STATUS.REJECTED;
     if (approveReportDto.comments) {
-      // You might want to add a comments field to the entity
-      // For now, we'll store it in reportData
-      submission.reportData = {
-        ...submission.reportData,
-        rejectionComments: approveReportDto.comments,
-        rejectedAt: new Date().toISOString(),
-      };
+      submission.rejectionComments = approveReportDto.comments;
     }
+    submission.rejectedAt = new Date();
 
     const rejectedSubmission =
       await this.reportSubmissionRepository.save(submission);
@@ -370,6 +360,100 @@ export class ReportsService {
       statusCode: 200,
       message: 'Report submission deleted successfully',
       payload: null,
+    };
+  }
+
+  async submitForApproval(id: string): Promise<StructuredResponse> {
+    const submission = await this.reportSubmissionRepository.findOne({
+      where: { id },
+      relations: ['project', 'reportTemplate'],
+    });
+
+    if (!submission) {
+      throw new NotFoundException(`Report submission with ID ${id} not found`);
+    }
+
+    // Only allow submission of draft reports
+    if (submission.status !== REPORT_STATUS.DRAFT) {
+      throw new BadRequestException(
+        'Only draft reports can be submitted for approval',
+      );
+    }
+
+    submission.status = REPORT_STATUS.SUBMITTED;
+    const submittedReport =
+      await this.reportSubmissionRepository.save(submission);
+
+    return {
+      status: true,
+      statusCode: 200,
+      message: 'Report submitted for approval successfully',
+      payload: submittedReport,
+    };
+  }
+
+  async getReportStatistics(): Promise<StructuredResponse> {
+    const [total, draft, submitted, approved, rejected] = await Promise.all([
+      this.reportSubmissionRepository.count(),
+      this.reportSubmissionRepository.count({
+        where: { status: REPORT_STATUS.DRAFT },
+      }),
+      this.reportSubmissionRepository.count({
+        where: { status: REPORT_STATUS.SUBMITTED },
+      }),
+      this.reportSubmissionRepository.count({
+        where: { status: REPORT_STATUS.APPROVED },
+      }),
+      this.reportSubmissionRepository.count({
+        where: { status: REPORT_STATUS.REJECTED },
+      }),
+    ]);
+
+    const statistics = {
+      total,
+      draft,
+      submitted,
+      approved,
+      rejected,
+      pendingReview: submitted, // Alias for submitted
+      completionRate: total > 0 ? ((approved + rejected) / total) * 100 : 0,
+    };
+
+    return {
+      status: true,
+      statusCode: 200,
+      message: 'Report statistics retrieved successfully',
+      payload: statistics,
+    };
+  }
+
+  async getReportsByProjectAndStatus(
+    projectId: string,
+    status: REPORT_STATUS,
+  ): Promise<StructuredResponse> {
+    // Verify project exists
+    const project = await this.projectsRepository.findOne({
+      where: { id: projectId },
+    });
+
+    if (!project) {
+      throw new NotFoundException(`Project with ID ${projectId} not found`);
+    }
+
+    const submissions = await this.reportSubmissionRepository.find({
+      where: {
+        project: { id: projectId },
+        status,
+      },
+      relations: ['project', 'reportTemplate'],
+      order: { createdAt: 'DESC' },
+    });
+
+    return {
+      status: true,
+      statusCode: 200,
+      message: 'Report submissions retrieved successfully',
+      payload: submissions,
     };
   }
 }
