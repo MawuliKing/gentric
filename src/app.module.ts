@@ -10,10 +10,9 @@ import { ProjectTypeModule } from './api/project-type/project-type.module';
 import { ProjectModule } from './api/project/project.module';
 import { AgentModule } from './api/agent/agent.module';
 import { CustomerModule } from './api/customer/customer.module';
+import { ReportsModule } from './api/reports/reports.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './utils/guards/auth.giuard';
-import { ReportsController } from './api/reports/reports.controller';
-import { ReportsService } from './api/reports/reports.service';
 
 @Module({
   imports: [
@@ -34,14 +33,13 @@ import { ReportsService } from './api/reports/reports.service';
     ProjectModule,
     AgentModule,
     CustomerModule,
+    ReportsModule,
   ],
   providers: [
     {
       useClass: AuthGuard,
       provide: APP_GUARD,
     },
-    ReportsService,
   ],
-  controllers: [ReportsController],
 })
-export class AppModule { }
+export class AppModule {}
