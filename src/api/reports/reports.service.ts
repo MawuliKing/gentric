@@ -54,16 +54,19 @@ export class ReportsService {
     }
 
     // Check if a report submission already exists for this project and template
-    const existingSubmission = await this.reportSubmissionRepository.findOne({
+    const numberOfSubmissions = await this.reportSubmissionRepository.count({
       where: {
         project: { id: createReportSubmissionDto.projectId },
         reportTemplate: { id: createReportSubmissionDto.reportTemplateId },
       },
     });
 
-    if (existingSubmission) {
+    if (
+      reportTemplate.numberOfSubmissions &&
+      numberOfSubmissions >= reportTemplate.numberOfSubmissions
+    ) {
       throw new ConflictException(
-        'A report submission already exists for this project and template',
+        `Report template ${reportTemplate.name} has reached the maximum number of submissions`,
       );
     }
 
@@ -104,7 +107,7 @@ export class ReportsService {
     pageSize: number = 10,
   ): Promise<StructuredResponse> {
     const [data, total] = await this.reportSubmissionRepository.findAndCount({
-      relations: ['project', 'reportTemplate'],
+      relations: ['project'],
       order: { createdAt: 'DESC' },
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -125,7 +128,7 @@ export class ReportsService {
   async findByProject(projectId: string): Promise<StructuredResponse> {
     const submissions = await this.reportSubmissionRepository.find({
       where: { project: { id: projectId } },
-      relations: ['project', 'reportTemplate'],
+      relations: ['project'],
       order: { createdAt: 'DESC' },
     });
 
@@ -153,7 +156,7 @@ export class ReportsService {
 
     const [data, total] = await this.reportSubmissionRepository.findAndCount({
       where: { project: { id: projectId } },
-      relations: ['project', 'reportTemplate'],
+      relations: ['project'],
       order: { createdAt: 'DESC' },
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -174,7 +177,7 @@ export class ReportsService {
   async findByStatus(status: REPORT_STATUS): Promise<StructuredResponse> {
     const submissions = await this.reportSubmissionRepository.find({
       where: { status },
-      relations: ['project', 'reportTemplate'],
+      relations: ['project'],
       order: { createdAt: 'DESC' },
     });
 
@@ -193,7 +196,7 @@ export class ReportsService {
   ): Promise<StructuredResponse> {
     const [data, total] = await this.reportSubmissionRepository.findAndCount({
       where: { status },
-      relations: ['project', 'reportTemplate'],
+      relations: ['project'],
       order: { createdAt: 'DESC' },
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -214,7 +217,7 @@ export class ReportsService {
   async findOne(id: string): Promise<StructuredResponse> {
     const submission = await this.reportSubmissionRepository.findOne({
       where: { id },
-      relations: ['project', 'reportTemplate'],
+      relations: ['project'],
     });
 
     if (!submission) {
@@ -235,7 +238,7 @@ export class ReportsService {
   ): Promise<StructuredResponse> {
     const submission = await this.reportSubmissionRepository.findOne({
       where: { id },
-      relations: ['project', 'reportTemplate'],
+      relations: ['project'],
     });
 
     if (!submission) {
@@ -270,7 +273,7 @@ export class ReportsService {
   ): Promise<StructuredResponse> {
     const submission = await this.reportSubmissionRepository.findOne({
       where: { id },
-      relations: ['project', 'reportTemplate'],
+      relations: ['project'],
     });
 
     if (!submission) {
@@ -305,7 +308,7 @@ export class ReportsService {
   ): Promise<StructuredResponse> {
     const submission = await this.reportSubmissionRepository.findOne({
       where: { id },
-      relations: ['project', 'reportTemplate'],
+      relations: ['project'],
     });
 
     if (!submission) {
@@ -366,7 +369,7 @@ export class ReportsService {
   async submitForApproval(id: string): Promise<StructuredResponse> {
     const submission = await this.reportSubmissionRepository.findOne({
       where: { id },
-      relations: ['project', 'reportTemplate'],
+      relations: ['project'],
     });
 
     if (!submission) {
@@ -445,7 +448,7 @@ export class ReportsService {
         project: { id: projectId },
         status,
       },
-      relations: ['project', 'reportTemplate'],
+      relations: ['project'],
       order: { createdAt: 'DESC' },
     });
 
