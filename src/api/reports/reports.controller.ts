@@ -31,7 +31,7 @@ import { REPORT_STATUS } from '../../utils/generics/enums';
 @Controller('reports')
 @ApiBearerAuth()
 export class ReportsController {
-  constructor(private readonly reportsService: ReportsService) {}
+  constructor(private readonly reportsService: ReportsService) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a new report submission' })
@@ -174,6 +174,17 @@ export class ReportsController {
     );
   }
 
+  @Get('statistics')
+  @ApiOperation({ summary: 'Get report submission statistics' })
+  @ApiResponse({
+    status: 200,
+    description: 'Report statistics retrieved successfully',
+    type: StructuredResponse,
+  })
+  async getStatistics(): Promise<StructuredResponse> {
+    return await this.reportsService.getReportStatistics();
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a report submission by ID' })
   @ApiParam({ name: 'id', description: 'Report submission UUID' })
@@ -278,17 +289,6 @@ export class ReportsController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<StructuredResponse> {
     return await this.reportsService.submitForApproval(id);
-  }
-
-  @Get('statistics')
-  @ApiOperation({ summary: 'Get report submission statistics' })
-  @ApiResponse({
-    status: 200,
-    description: 'Report statistics retrieved successfully',
-    type: StructuredResponse,
-  })
-  async getStatistics(): Promise<StructuredResponse> {
-    return await this.reportsService.getReportStatistics();
   }
 
   @Get('project/:projectId/status/:status')

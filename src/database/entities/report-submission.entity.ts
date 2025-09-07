@@ -10,7 +10,7 @@ export class ReportSubmissionEntity extends BaseDbEntity {
   @Column({ type: 'jsonb', nullable: true })
   reportData: ReportSectionDto[];
 
-  @Column({ type: 'enum', enum: REPORT_STATUS, default: REPORT_STATUS.DRAFT })
+  @Column({ type: 'enum', enum: REPORT_STATUS, default: REPORT_STATUS.SUBMITTED })
   status: REPORT_STATUS;
 
   @ManyToOne(() => ProjectsEntity, (project) => project.id, { nullable: false })
